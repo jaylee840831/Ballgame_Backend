@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.example.ballgame.dao.UserDao;
 
 @Repository
-public interface UsersRepository extends JpaRepository<UserDao,Integer>{
+public interface UsersRepository extends JpaRepository<UserDao,Long>{
 
 	Optional<UserDao> findByEmail(String email);
 }

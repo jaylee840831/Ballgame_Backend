@@ -29,7 +29,7 @@ public class SecurityConfiguration {
 			.csrf()
 			.disable()
 			.authorizeHttpRequests()
-			.requestMatchers("/api/v1/auth/**")//哪些url不需認證 直接訪問(白名單)
+			.requestMatchers("/api/v1/auth/**","/server1/**")//哪些url不需認證 直接訪問(白名單)
 			.permitAll()
 			.anyRequest()
 			.authenticated()//除了白名單之外的都需要經過驗證

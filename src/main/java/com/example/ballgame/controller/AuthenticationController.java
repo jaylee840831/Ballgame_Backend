@@ -17,6 +17,7 @@ import com.example.ballgame.dto.AuthenticationRequest;
 import com.example.ballgame.dto.AuthenticationResponse;
 import com.example.ballgame.dto.RegisterRequest;
 import com.example.ballgame.dto.UserDto;
+import com.example.ballgame.repository.UsersRepository;
 import com.example.ballgame.service.AuthenticationService;
 
 
@@ -35,7 +36,15 @@ public class AuthenticationController {
 	  public ResponseEntity<AuthenticationResponse> register(
 	      @RequestBody RegisterRequest request
 	  ) {
-	    return ResponseEntity.ok(service.register(request));
+		  if(service.userAmount() >= 5) {
+			 AuthenticationResponse errorResponse = new AuthenticationResponse();
+			 errorResponse.setJwt("");
+			 errorResponse.setMessage("註冊已達上限數量");
+			 errorResponse.setStatus(0);
+			 return ResponseEntity.ok(errorResponse);
+		  }
+		  
+		  return ResponseEntity.ok(service.register(request));
 	  }
 	  @PostMapping("/authenticate")
 	  public ResponseEntity<AuthenticationResponse> authenticate(

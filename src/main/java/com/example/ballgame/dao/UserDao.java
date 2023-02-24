@@ -30,7 +30,7 @@ public class UserDao implements UserDetails {
 
   @Id
   @GeneratedValue
-  private Integer id;
+  private Long id;
   private String name;
   private String email;
   private String password;
@@ -47,7 +47,7 @@ public class UserDao implements UserDetails {
   }
 
   
-  public Integer getId() {
+  public Long getId() {
 	return id;
 }
 

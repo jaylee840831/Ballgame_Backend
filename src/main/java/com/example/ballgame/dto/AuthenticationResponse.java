@@ -11,10 +11,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AuthenticationResponse {
 
+	private String name = "";
     private int status;
     private String jwt;
     private String message;
-    
+
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
 	public int getStatus() {
 		return status;
 	}
