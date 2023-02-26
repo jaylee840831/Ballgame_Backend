@@ -1,5 +1,10 @@
 package com.example.ballgame.service;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,15 +29,22 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthenticationService {
 
-	@Autowired
+  @Autowired
   private UsersRepository repository;
-	@Autowired
+  
+  @Autowired
   private TokenRepository tokenRepository;
-	@Autowired
+  
+  @Autowired
   private PasswordEncoder passwordEncoder;
-	@Autowired
+  
+  @Autowired
   private JwtService jwtService;
-	@Autowired
+  
+  @Autowired
+  CommonService commonService;
+  
+  @Autowired
   private AuthenticationManager authenticationManager;
 
   public AuthenticationResponse register(RegisterRequest request) {
@@ -87,8 +99,14 @@ public class AuthenticationService {
         .orElseThrow();
     
     var jwtToken = jwtService.generateToken(user);
-    revokeAllUserTokens(user);
-    saveUserToken(user, jwtToken);
+//    revokeAllUserTokens(user);
+    
+    var findToken = tokenRepository.findByUserId(user.getId());
+    if(!findToken.isEmpty()) {
+    	updateUserToken(user.getId(), jwtToken);
+    }else {
+    	saveUserToken(user, jwtToken);
+    }
 
     response.setName(user.getName());
     response.setJwt(jwtToken);
@@ -101,6 +119,12 @@ public class AuthenticationService {
   public Long userAmount() {
 	  return repository.count();
   }
+  
+  private void updateUserToken(Long userId, String jwtToken) {
+	
+    tokenRepository.updateByUserId(userId, jwtToken, commonService.getCurrentTime("UTC+8"));
+	  
+  }
 
   private void saveUserToken(UserDao user, String jwtToken) {
 	
@@ -110,18 +134,21 @@ public class AuthenticationService {
 	token.setTokenType(TokenType.BEARER);
 	token.setExpired(false);
 	token.setRevoked(false);
+	token.setCreateDate(commonService.getCurrentTime("UTC+8"));
+	token.setUpdateDate(commonService.getCurrentTime("UTC+8"));
 	
     tokenRepository.save(token);
   }
 
-  private void revokeAllUserTokens(UserDao user) {
-	List<Token> validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
-    if (validUserTokens.isEmpty())
-      return;
-    validUserTokens.forEach(token -> {
-      token.setExpired(true);
-      token.setRevoked(true);
-    });
-    tokenRepository.saveAll(validUserTokens);
-  }
+//  private void revokeAllUserTokens(UserDao user) {
+//	List<Token> validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
+//    if (validUserTokens.isEmpty())
+//      return;
+//    validUserTokens.forEach(token -> {
+//      token.setExpired(true);
+//      token.setRevoked(true);
+//    });
+//    tokenRepository.saveAll(validUserTokens);
+//  }
+  
 }

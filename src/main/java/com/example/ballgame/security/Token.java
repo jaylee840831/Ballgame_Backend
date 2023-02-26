@@ -1,5 +1,7 @@
 package com.example.ballgame.security;
 
+import java.util.Date;
+
 import com.example.ballgame.dao.UserDao;
 
 import jakarta.persistence.Column;
@@ -35,6 +37,10 @@ public class Token {
   public boolean revoked;
 
   public boolean expired;
+  
+  public Date createDate;
+  
+  public Date updateDate;
 
   @ManyToOne
   @JoinColumn(name = "user_id")
@@ -47,6 +53,22 @@ public String getToken() {
 
 public void setToken(String token) {
 	this.token = token;
+}
+
+public Date getCreateDate() {
+	return createDate;
+}
+
+public void setCreateDate(Date createDate) {
+	this.createDate = createDate;
+}
+
+public Date getUpdateDate() {
+	return updateDate;
+}
+
+public void setUpdateDate(Date updateDate) {
+	this.updateDate = updateDate;
 }
 
 public TokenType getTokenType() {
