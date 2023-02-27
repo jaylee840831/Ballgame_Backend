@@ -14,131 +14,135 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.ballgame.dao.UserDao;
+import com.example.ballgame.dao.UserInfoDao;
 import com.example.ballgame.dto.AuthenticationRequest;
 import com.example.ballgame.dto.AuthenticationResponse;
 import com.example.ballgame.dto.RegisterRequest;
 import com.example.ballgame.repository.TokenRepository;
+import com.example.ballgame.repository.UserInfoRepository;
 import com.example.ballgame.repository.UsersRepository;
 import com.example.ballgame.security.Role;
 import com.example.ballgame.security.Token;
 import com.example.ballgame.security.TokenType;
 
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.var;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
 
-  @Autowired
-  private UsersRepository repository;
-  
-  @Autowired
-  private TokenRepository tokenRepository;
-  
-  @Autowired
-  private PasswordEncoder passwordEncoder;
-  
-  @Autowired
-  private JwtService jwtService;
-  
-  @Autowired
-  CommonService commonService;
-  
-  @Autowired
-  private AuthenticationManager authenticationManager;
+	@Autowired
+	private UsersRepository repository;
 
-  public AuthenticationResponse register(RegisterRequest request) {
-	
-	AuthenticationResponse response = new AuthenticationResponse();  
-	  
-	var user = repository.findByEmail(request.getEmail());
-	if(!user.isEmpty()) {
-        response.setJwt("");
-        response.setStatus(0);
-        response.setMessage("email已被註冊");
-        return response;
+	@Autowired
+	private UserInfoRepository userInfoRepository;
+
+	@Autowired
+	private TokenRepository tokenRepository;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private JwtService jwtService;
+
+	@Autowired
+	CommonService commonService;
+
+	@Autowired
+	private AuthenticationManager authenticationManager;
+
+	public Long userCount() {
+		return repository.count();
 	}
-	  
-	UserDao userDao = new UserDao();
-	userDao.setName(request.getName());
-	userDao.setEmail(request.getEmail());
-	userDao.setPassword(passwordEncoder.encode(request.getPassword()));//使用者密碼加密
-	userDao.setRole(Role.USER);
-	
-    var savedUser = repository.save(userDao);
-//    var jwtToken = jwtService.generateToken(user);
-//    saveUserToken(savedUser, jwtToken);
-    
-    if(!savedUser.getEmail().equals("")) {
-    	response.setName(savedUser.getName());
-        response.setJwt("");
-        response.setStatus(1);
-        response.setMessage("註冊成功");
-    }
-    else {
-        response.setJwt("");
-        response.setStatus(0);
-        response.setMessage("註冊失敗");
-    }
-    
-    return response;
-  }
 
-  public AuthenticationResponse authenticate(AuthenticationRequest request) {
-	  
-	AuthenticationResponse response = new AuthenticationResponse(); 
-	  
-    authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(
-            request.getEmail(),
-            request.getPassword()
-        )
-    );
-    
-    var user = repository.findByEmail(request.getEmail())
-        .orElseThrow();
-    
-    var jwtToken = jwtService.generateToken(user);
+	public AuthenticationResponse register(RegisterRequest request) {
+
+		AuthenticationResponse response = new AuthenticationResponse();
+
+		var user = repository.findByEmail(request.getEmail());
+		if (!user.isEmpty()) {
+			response.setJwt("");
+			response.setStatus(0);
+			response.setMessage("email已被註冊");
+			return response;
+		}
+
+		UserDao userDao = new UserDao();
+		userDao.setName(request.getName());
+		userDao.setEmail(request.getEmail());
+		userDao.setPassword(passwordEncoder.encode(request.getPassword()));// 使用者密碼加密
+		userDao.setRole(Role.USER);
+
+		var savedUser = repository.save(userDao);
+//  var jwtToken = jwtService.generateToken(user);
+//  saveUserToken(savedUser, jwtToken);
+
+		UserInfoDao userInfoDao = new UserInfoDao();
+		userInfoDao.setUser(userDao);
+		var saveUserInfo = userInfoRepository.save(userInfoDao);
+
+		if (!savedUser.getEmail().equals("") && (saveUserInfo.getUser().getEmail().equals(savedUser.getEmail()))) {
+			response.setName(savedUser.getName());
+			response.setJwt("");
+			response.setStatus(1);
+			response.setMessage("註冊成功");
+		} else {
+			response.setJwt("");
+			response.setStatus(0);
+			response.setMessage("註冊失敗");
+		}
+
+		return response;
+	}
+
+	public AuthenticationResponse authenticate(AuthenticationRequest request) {
+
+		AuthenticationResponse response = new AuthenticationResponse();
+
+		authenticationManager
+				.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+
+		var user = repository.findByEmail(request.getEmail()).orElseThrow();
+
+		var jwtToken = jwtService.generateToken(user);
 //    revokeAllUserTokens(user);
-    
-    var findToken = tokenRepository.findByUserId(user.getId());
-    if(!findToken.isEmpty()) {
-    	updateUserToken(user.getId(), jwtToken);
-    }else {
-    	saveUserToken(user, jwtToken);
-    }
 
-    response.setName(user.getName());
-    response.setJwt(jwtToken);
-    response.setStatus(1);
-    response.setMessage("登入成功");
-    
-    return response;
-  }
-  
-  public Long userAmount() {
-	  return repository.count();
-  }
-  
-  private void updateUserToken(Long userId, String jwtToken) {
-	
-    tokenRepository.updateByUserId(userId, jwtToken, commonService.getCurrentTime("UTC+8"));
-	  
-  }
+		var findToken = tokenRepository.findByUserId(user.getId());
+		if (!findToken.isEmpty()) {
+			updateUserToken(user.getId(), jwtToken);
+		} else {
+			saveUserToken(user, jwtToken);
+		}
 
-  private void saveUserToken(UserDao user, String jwtToken) {
-	
-	Token token = new Token();
-	token.setUser(user);
-	token.setToken(jwtToken);
-	token.setTokenType(TokenType.BEARER);
-	token.setExpired(false);
-	token.setRevoked(false);
-	token.setCreateDate(commonService.getCurrentTime("UTC+8"));
-	token.setUpdateDate(commonService.getCurrentTime("UTC+8"));
-	
-    tokenRepository.save(token);
-  }
+		response.setName(user.getName());
+		response.setJwt(jwtToken);
+		response.setStatus(1);
+		response.setMessage("登入成功");
+
+		return response;
+	}
+
+	private void updateUserToken(Long userId, String jwtToken) {
+
+		tokenRepository.updateByUserId(userId, jwtToken, commonService.getCurrentTime("UTC+8"));
+
+	}
+
+	private void saveUserToken(UserDao user, String jwtToken) {
+
+		Token token = new Token();
+		token.setUser(user);
+		token.setToken(jwtToken);
+		token.setTokenType(TokenType.BEARER);
+		token.setExpired(false);
+		token.setRevoked(false);
+		token.setCreateDate(commonService.getCurrentTime("UTC+8"));
+		token.setUpdateDate(commonService.getCurrentTime("UTC+8"));
+
+		tokenRepository.save(token);
+	}
 
 //  private void revokeAllUserTokens(UserDao user) {
 //	List<Token> validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
@@ -150,5 +154,5 @@ public class AuthenticationService {
 //    });
 //    tokenRepository.saveAll(validUserTokens);
 //  }
-  
+
 }

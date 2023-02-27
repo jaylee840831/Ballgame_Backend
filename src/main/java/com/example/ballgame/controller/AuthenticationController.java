@@ -36,7 +36,7 @@ public class AuthenticationController {
 	  public ResponseEntity<AuthenticationResponse> register(
 	      @RequestBody RegisterRequest request
 	  ) {
-		  if(service.userAmount() >= 5) {
+		  if(service.userCount() >= 5) {
 			 AuthenticationResponse errorResponse = new AuthenticationResponse();
 			 errorResponse.setJwt("");
 			 errorResponse.setMessage("註冊已達上限數量");
