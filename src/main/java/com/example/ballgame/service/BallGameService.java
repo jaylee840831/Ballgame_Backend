@@ -23,7 +23,7 @@ public class BallGameService {
 
 	@Autowired
 	CommonService commonService;
-	
+
 	public Long ballGameCount() {
 		return ballGameRepository.count();
 	}
@@ -47,22 +47,26 @@ public class BallGameService {
 		BallGameDao dao = ballGameRepository.findBallGame(id);
 
 		if (dao.getSponsor().equals("")) {
-			return new BallGameDto(-1L, "", "", "",
-					null, null, "", new ResponseDto(0, "查無此資料"));
+			return new BallGameDto(-1L, "", "", "", null, null, "", new ResponseDto(0, "查無此資料"));
 		}
 
-		return new BallGameDto(dao.getId(), dao.getSponsor(), dao.getGameName(), dao.getCourtName(),
-				dao.getStartDate(), dao.getEndDate(), dao.getNote(), new ResponseDto(1, "查詢成功"));
+		return new BallGameDto(dao.getId(), dao.getSponsor(), dao.getGameName(), dao.getCourtName(), dao.getStartDate(),
+				dao.getEndDate(), dao.getNote(), new ResponseDto(1, "查詢成功"));
 	}
 
 	public BallGameDto addGame(BallGameDto dto) {
+
+		if (dto.getStartDate().after(dto.getEndDate())) {
+			dto.setResponse(new ResponseDto(0, "新增失敗，開始時間不可大於結束時間"));
+			return dto;
+		}
 
 		BallGameDao dao = new BallGameDao();
 		dao.setSponsor(dto.getSponsor());
 		dao.setGameName(dto.getGameName());
 		dao.setCourtName(dto.getCourtName());
-		dao.setStartDate(commonService.convertDateToLocal("UTC+8", dto.getStartDate()));
-		dao.setEndDate(commonService.convertDateToLocal("UTC+8", dto.getEndDate()));
+		dao.setStartDate(dto.getStartDate());
+		dao.setEndDate(dto.getEndDate());
 		dao.setNote(dto.getNote());
 
 		var saveBallGame = ballGameRepository.save(dao);
