@@ -84,6 +84,7 @@ public class AuthenticationService {
 		var saveUserInfo = userInfoRepository.save(userInfoDao);
 
 		if (!savedUser.getEmail().equals("") && (saveUserInfo.getUser().getEmail().equals(savedUser.getEmail()))) {
+			response.setEmail(savedUser.getEmail());
 			response.setName(savedUser.getName());
 			response.setJwt("");
 			response.setStatus(1);
@@ -116,6 +117,7 @@ public class AuthenticationService {
 			saveUserToken(user, jwtToken);
 		}
 
+		response.setEmail(user.getEmail());
 		response.setName(user.getName());
 		response.setJwt(jwtToken);
 		response.setStatus(1);
