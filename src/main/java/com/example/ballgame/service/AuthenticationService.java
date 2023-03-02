@@ -80,6 +80,7 @@ public class AuthenticationService {
 //  saveUserToken(savedUser, jwtToken);
 
 		UserInfoDao userInfoDao = new UserInfoDao();
+		userInfoDao.setName(request.getName());
 		userInfoDao.setUser(userDao);
 		var saveUserInfo = userInfoRepository.save(userInfoDao);
 

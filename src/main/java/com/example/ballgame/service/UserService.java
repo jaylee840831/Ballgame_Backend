@@ -1,8 +1,5 @@
 package com.example.ballgame.service;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,22 +23,23 @@ public class UserService {
 	BallGameRepository ballGameRepository;
 
 	public UserInfoDto editUserInfo(UserInfoDto dto) {
-		
-		System.out.println(dto.getpName());
 
 		try {
 
-			if (dto.getImage() != null) {
-
-				userInfoRepository.updateUserInfo(dto.getName(), dto.getHeight(), dto.getWeight(), dto.getSex(),
-						dto.getPosition(), dto.getImage(), dto.getEmail());
-
-			} else {
-
-				userInfoRepository.updateUserInfoWithoutImage(dto.getName(), dto.getHeight(), dto.getWeight(), dto.getSex(),
-						dto.getPosition(), dto.getEmail());
-
-			}
+//			if (dto.getImage() != null) {
+//
+//				userInfoRepository.updateUserInfo(dto.getName(), dto.getHeight(), dto.getWeight(), dto.getSex(),
+//						dto.getPosition(), dto.getImage(), dto.getEmail());
+//
+//			} else {
+//
+//				userInfoRepository.updateUserInfoWithoutImage(dto.getName(), dto.getHeight(), dto.getWeight(), dto.getSex(),
+//						dto.getPosition(), dto.getEmail());
+//
+//			}
+			
+			userInfoRepository.updateUserInfoWithoutImage(dto.getName(), dto.getHeight(), dto.getWeight(), dto.getSex(),
+					dto.getPosition(), dto.getEmail());
 
 			usersRepository.updateNameByEmail(dto.getName(), dto.getEmail());
 			ballGameRepository.updateSponsorByName(dto.getName(), dto.getpName());
@@ -54,6 +52,32 @@ public class UserService {
 
 		}
 
+		return dto;
+	}
+	
+	public UserInfoDto getUserInfo(String email) {
+		
+		UserInfoDto dto = new UserInfoDto();
+		UserInfoDao dao = userInfoRepository.findByEmail(email);
+		
+		if(!dao.getName().equals("")) {
+			
+			dto.setEmail(email);
+			dto.setName(dao.getName());
+			dto.setSex(dao.getSex());
+			dto.setHeight(dao.getHeight());
+			dto.setWeight(dao.getWeight());
+			dto.setPosition(dao.getPosition());
+//			dto.setImage(dao.getImage());
+			
+			dto.setResponse(new ResponseDto(1, "查詢成功"));
+			
+		}else {
+			
+			dto.setResponse(new ResponseDto(0, "查詢失敗"));
+			
+		}
+		
 		return dto;
 	}
 }

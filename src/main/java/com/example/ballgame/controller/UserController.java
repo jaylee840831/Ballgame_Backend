@@ -23,4 +23,9 @@ public class UserController {
 	public ResponseEntity<UserInfoDto> editUserInfo(@RequestBody UserInfoDto dto) {
 		return ResponseEntity.ok(userService.editUserInfo(dto));
 	}
+	
+	@PostMapping("/info/get")
+	public ResponseEntity<UserInfoDto> getUserInfo(@RequestBody String email) {
+		return ResponseEntity.ok(userService.getUserInfo(email));
+	}
 }

@@ -1,5 +1,7 @@
 package com.example.ballgame.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -25,4 +27,7 @@ public interface UserInfoRepository extends JpaRepository<UserInfoDao, Long> {
 			+ "where ui.id = (select ui.id from UserInfoDao ui, UserDao u where u.email = :email and ui.user.id = u.id)")
 	void updateUserInfoWithoutImage(String name, String height, String weight, String sex, String position,
 			String email);
+	
+	@Query(value = "select ui from UserInfoDao ui, UserDao u where u.email = :email and ui.user.id = u.id")
+	UserInfoDao findByEmail(String email);
 }
