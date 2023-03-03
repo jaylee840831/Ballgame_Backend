@@ -46,11 +46,11 @@ public class BallGameController {
 		return ResponseEntity.ok(ballGameService.addGame(ballGameDto));
 	}
 	
-//	//user儲存的全部球局
-//	@PostMapping("/mark/user")
-//	public ResponseEntity<List<MarkGameDto>> allBallGameMark(@RequestBody MarkGameDto dto){
-//		return ResponseEntity.ok(ballGameService.allMarkGame(dto));
-//	}
+	//user儲存的球局
+	@PostMapping("/mark/user")
+	public ResponseEntity<List<BallGameDto>> allBallGameMark(@RequestBody MarkGameDto dto){
+		return ResponseEntity.ok(ballGameService.allMarkGame(dto));
+	}
 	
 	//儲存球局
 	@PostMapping("/mark")

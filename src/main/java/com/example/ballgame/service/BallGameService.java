@@ -66,6 +66,7 @@ public class BallGameService {
 					}
 				}
 
+				//區分有標記跟無標記的球局
 				if (isMark) {
 
 					response.add(new BallGameDto(dao.getId(), dao.getSponsor(), dao.getGameName(), dao.getCourtName(),
@@ -131,19 +132,49 @@ public class BallGameService {
 		return dto;
 	}
 
-//	public List<MarkGameDto> allMarkGame(MarkGameDto dto) {
-//		
-//		List<MarkGameDto> dtos = new ArrayList<>();
-//		List<HashMap<String, Object>> daos = new ArrayList<>();
-//		
-//		daos = ballGameRepository.getAllMarkGames(dto.getEmail());
-//		
-//		if(daos.size() > 0) {
-//			
-//		}
-//		
-//		return dtos;
-//	}
+	public List<BallGameDto> allMarkGame(MarkGameDto dto) {
+		
+		List<BallGameDao> daos = ballGameRepository.findAll();
+		List<BallGameDto> response = new ArrayList<>();
+
+		List<Object> markDaos = new ArrayList<>();
+		markDaos = ballGameRepository.getAllMarkGames(dto.getEmail());
+
+		//只取該使用者有標記的球局
+		if (markDaos.size() > 0) {
+
+			for (BallGameDao dao : daos) {
+
+				boolean isMark = false;
+
+				for (Object markDao : markDaos) {
+
+					HashMap<String, Long> userGameId = extractObject(markDao.toString());
+
+					if (dao.getId().equals(userGameId.get("gameId"))) {
+
+						isMark = true;
+						break;
+
+					} else {
+
+						isMark = false;
+
+					}
+				}
+
+				if (isMark) {
+
+					response.add(new BallGameDto(dao.getId(), dao.getSponsor(), dao.getGameName(), dao.getCourtName(),
+							dao.getStartDate(), dao.getEndDate(), dao.getNote(), true, new ResponseDto(1, "查詢成功")));
+
+				}
+			}
+
+		}
+
+		return response;
+	}
 
 	public MarkGameDto markGame(MarkGameDto dto) {
 
