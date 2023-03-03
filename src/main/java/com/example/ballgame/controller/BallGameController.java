@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.ballgame.dto.BallGameDto;
+import com.example.ballgame.dto.MarkGameDto;
 import com.example.ballgame.dto.ResponseDto;
 import com.example.ballgame.service.BallGameService;
 
@@ -24,9 +25,9 @@ public class BallGameController {
 	@Autowired
 	private BallGameService ballGameService;
 
-	@GetMapping("/all")
-	public ResponseEntity<List<BallGameDto>> allGame(){
-		return ResponseEntity.ok(ballGameService.getAllGames());
+	@PostMapping("/all")
+	public ResponseEntity<List<BallGameDto>> allGame(@RequestBody MarkGameDto dto){
+		return ResponseEntity.ok(ballGameService.getAllGames(dto));
 	}
 	
 	@GetMapping("/{id}")
@@ -39,9 +40,27 @@ public class BallGameController {
 		
 		if(ballGameService.ballGameCount() >= 30) {
 			return ResponseEntity.ok(new BallGameDto(-1L, "", "", "",
-					null, null, "", new ResponseDto(0, "球局已達上限數量")));
+					null, null, "", false, new ResponseDto(0, "球局已達上限數量")));
 		}
 		
 		return ResponseEntity.ok(ballGameService.addGame(ballGameDto));
+	}
+	
+//	//user儲存的全部球局
+//	@PostMapping("/mark/user")
+//	public ResponseEntity<List<MarkGameDto>> allBallGameMark(@RequestBody MarkGameDto dto){
+//		return ResponseEntity.ok(ballGameService.allMarkGame(dto));
+//	}
+	
+	//儲存球局
+	@PostMapping("/mark")
+	public ResponseEntity<MarkGameDto> ballGameMark(@RequestBody MarkGameDto dto) {
+		return ResponseEntity.ok(ballGameService.markGame(dto));
+	}
+	
+	//取消儲存球局
+	@PostMapping("/mark/delete")
+	public ResponseEntity<MarkGameDto> deleteBallGameMark(@RequestBody MarkGameDto dto) {
+		return ResponseEntity.ok(ballGameService.deleteMarkGame(dto));
 	}
 }

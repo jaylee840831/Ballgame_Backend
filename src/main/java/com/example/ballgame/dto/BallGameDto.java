@@ -11,13 +11,15 @@ public class BallGameDto {
 	private Date startDate;
 	private Date endDate;
 	private String note;
+	private boolean isMark = false;
 	private ResponseDto response;
 	
 	public BallGameDto() {
 	}
-
+	
 	public BallGameDto(Long id, String sponsor, String gameName, String courtName, Date startDate, Date endDate,
-			String note, ResponseDto response) {
+			String note, boolean isMark, ResponseDto response) {
+		super();
 		this.id = id;
 		this.sponsor = sponsor;
 		this.gameName = gameName;
@@ -25,6 +27,7 @@ public class BallGameDto {
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.note = note;
+		this.isMark = isMark;
 		this.response = response;
 	}
 
@@ -90,5 +93,13 @@ public class BallGameDto {
 
 	public void setResponse(ResponseDto response) {
 		this.response = response;
+	}
+
+	public boolean isMark() {
+		return isMark;
+	}
+
+	public void setMark(boolean isMark) {
+		this.isMark = isMark;
 	}
 }

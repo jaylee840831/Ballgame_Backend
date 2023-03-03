@@ -44,9 +44,6 @@ public class UserInfoDao {
 	@JoinColumn(name = "user_id")
 	private UserDao user;
 
-	@ManyToMany
-	public List<BallGameDao> ballGame;
-
 	public String getName() {
 		return name;
 	}

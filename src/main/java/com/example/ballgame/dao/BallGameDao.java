@@ -33,7 +33,7 @@ public class BallGameDao {
 	private String note;
 
 	@ManyToMany(mappedBy = "ballGame")
-	private List<UserInfoDao> userInfo;
+	private List<UserDao> user;
 	
 	public Long getId() {
 		return id;
