@@ -12,19 +12,23 @@ import org.springframework.stereotype.Service;
 
 import com.example.ballgame.dao.BallGameDao;
 import com.example.ballgame.dao.MarkGameDao;
+import com.example.ballgame.dao.MessageDao;
 import com.example.ballgame.dto.BallGameDto;
 import com.example.ballgame.dto.MarkGameDto;
+import com.example.ballgame.dto.MessageDto;
 import com.example.ballgame.dto.ResponseDto;
 import com.example.ballgame.repository.BallGameRepository;
+import com.example.ballgame.repository.MessageRepository;
 import com.example.ballgame.repository.UsersRepository;
-
-import lombok.experimental.var;
 
 @Service
 public class BallGameService {
 
 	@Autowired
 	BallGameRepository ballGameRepository;
+
+	@Autowired
+	MessageRepository messageRepository;
 
 	@Autowired
 	UsersRepository usersRepository;
@@ -66,7 +70,7 @@ public class BallGameService {
 					}
 				}
 
-				//區分有標記跟無標記的球局
+				// 區分有標記跟無標記的球局
 				if (isMark) {
 
 					response.add(new BallGameDto(dao.getId(), dao.getSponsor(), dao.getGameName(), dao.getCourtName(),
@@ -105,6 +109,27 @@ public class BallGameService {
 				dao.getEndDate(), dao.getNote(), false, new ResponseDto(1, "查詢成功"));
 	}
 
+	public List<MessageDto> getChat(Long id) {
+
+		List<MessageDto> response = new ArrayList<MessageDto>();
+		List<MessageDao> daos = new ArrayList<MessageDao>();
+
+		daos = messageRepository.findMessageByBallGameChatId(id);
+
+		if (daos.size() != 0) {
+
+			for (MessageDao dao : daos) {
+
+				response.add(
+						new MessageDto(dao.getBallGameId().getId(), dao.getName(), dao.getContent(), dao.getDate()));
+
+			}
+
+		}
+
+		return response;
+	}
+
 	public BallGameDto addGame(BallGameDto dto) {
 
 		if (dto.getStartDate().after(dto.getEndDate())) {
@@ -133,14 +158,14 @@ public class BallGameService {
 	}
 
 	public List<BallGameDto> allMarkGame(MarkGameDto dto) {
-		
+
 		List<BallGameDao> daos = ballGameRepository.findAll();
 		List<BallGameDto> response = new ArrayList<>();
 
 		List<Object> markDaos = new ArrayList<>();
 		markDaos = ballGameRepository.getAllMarkGames(dto.getEmail());
 
-		//只取該使用者有標記的球局
+		// 只取該使用者有標記的球局
 		if (markDaos.size() > 0) {
 
 			for (BallGameDao dao : daos) {

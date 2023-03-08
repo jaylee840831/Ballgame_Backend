@@ -24,4 +24,7 @@ public interface BallGameRepository extends JpaRepository<BallGameDao, Long>{
 	
 	@Query(value = "select ubg from _user_ball_game ubg where ubg.user_id = (select u.id from _user u where u.email = ?1)", nativeQuery = true)
 	List<Object> getAllMarkGames(String email);
+	
+	@Query(value = "select * from ball_game b where b.id = ?1", nativeQuery = true)
+	BallGameDao findByid(Long id);
 }

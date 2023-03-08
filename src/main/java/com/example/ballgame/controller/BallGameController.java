@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.ballgame.dto.BallGameDto;
 import com.example.ballgame.dto.MarkGameDto;
+import com.example.ballgame.dto.MessageDto;
 import com.example.ballgame.dto.ResponseDto;
 import com.example.ballgame.service.BallGameService;
 
@@ -33,6 +34,11 @@ public class BallGameController {
 	@GetMapping("/{id}")
 	public ResponseEntity<BallGameDto> getGame(@PathVariable("id") Long id){
 		return ResponseEntity.ok(ballGameService.getGame(id));
+	}
+	
+	@GetMapping("/chatMessages/{id}")
+	public ResponseEntity<List<MessageDto>> getChat(@PathVariable("id") Long id){
+		return ResponseEntity.ok(ballGameService.getChat(id));
 	}
 	
 	@PostMapping("/new")

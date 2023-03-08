@@ -26,7 +26,6 @@ import com.example.ballgame.security.Token;
 import com.example.ballgame.security.TokenType;
 
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.var;
 
 @Service
 @RequiredArgsConstructor
