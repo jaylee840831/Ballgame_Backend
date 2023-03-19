@@ -18,7 +18,7 @@ import com.example.ballgame.dto.MessageDto;
 import com.example.ballgame.dto.ResponseDto;
 import com.example.ballgame.service.BallGameService;
 
-@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/v1/ballgame")
 public class BallGameController {

@@ -28,6 +28,8 @@ public class SecurityConfiguration {
 		http
 			.csrf()
 			.disable()
+			.cors()
+			.and()
 			.authorizeHttpRequests()
 			.requestMatchers("/api/v1/auth/**","/server1/**")//哪些url不需認證 直接訪問(白名單)
 			.permitAll()
