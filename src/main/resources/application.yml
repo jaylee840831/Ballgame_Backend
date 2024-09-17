@@ -17,4 +17,4 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
 server:
-  port : 5000 # aws啟動端口號
+  port : 8080

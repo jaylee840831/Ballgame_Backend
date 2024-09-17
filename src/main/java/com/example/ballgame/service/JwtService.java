@@ -1,6 +1,7 @@
 package com.example.ballgame.service;
 
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -61,7 +62,7 @@ import io.jsonwebtoken.security.Keys;
 public class JwtService {
 	
 	//密鑰
-	private static final String SECRET_KEY = "";
+	private static final String SECRET_KEY = Base64.getEncoder().encodeToString(Keys.secretKeyFor(SignatureAlgorithm.HS256).getEncoded());
 
 	public String extractUserEmail(String token) {
 		return extractClaim(token, Claims::getSubject);
