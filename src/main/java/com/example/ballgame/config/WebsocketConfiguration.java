@@ -11,9 +11,8 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer{
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		//指定映射註冊為stomp協定的url為"/server1"，同時指定使用sockJS協定
-		registry.addEndpoint("/server1").setAllowedOriginPatterns("*").withSockJS();
-//		registry.addEndpoint("/server1").setAllowedOriginPatterns("http://localhost:4200").withSockJS();
+		//指定映射註冊為stomp協定的url為"/ws"，同時指定使用sockJS協定
+		registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS();
 	}
 
 	@Override
